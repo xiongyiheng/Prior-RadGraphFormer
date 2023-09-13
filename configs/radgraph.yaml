@@ -1,0 +1,94 @@
+DATA:
+  DIM: 2                  # data dimension
+  BATCH_SIZE: 2           # Batch size for a single GPU, could be overwritten by command line argument
+  IMAGE_DATA_DIR: "/home/mlmi-matthias/physionet.org/files/mimic-cxr-jpg/2.0.0/files/"
+  LABEL_DATA_DIR: "/home/mlmi-kamilia/jingsong/RadGraph-RelationFormer/datasets/radgraph/"
+  IM_SCALE: [256, 256]
+  BG_EDGE_PER_IMG: 75
+  FG_EDGE_PER_IMG: 25
+  USE_GT_FILTER: True
+  DATASET: 'RadGraph'     # Dataset name
+  PIN_MEMORY: True        # Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.
+  NUM_WORKERS: 16     # Number of data loading threads
+  SEED: 10                # random seed for reproducibility
+
+MODEL:
+  # default model parameters
+  RESUME: ''
+  PRETRAIN: ''
+  NUM_TOKEN_CLS: 229        # Number of token classes, overwritten in data preparation
+  NUM_LABEL_CLS: 4
+  NUM_REL_CLS: 3
+  LABEL_SMOOTHING: 0.1    # Label Smoothing
+
+  ENCODER:
+    TYPE: deformable_transformer_backbone
+    NAME: deformable_transformer_backbone
+    HIDDEN_DIM: 512
+    POSITION_EMBEDDING: sine
+    LR_BACKBONE: 1e-4 # 2e-5
+    NUM_FEATURE_LEVELS: 3 # 4
+    BACKBONE: densenet121
+    MASKS: False
+    DILATION: False
+    # default Swin Transformer parameters
+    PATCH_SIZE: [4, 4, 4]
+    IN_CHANS: 3
+
+    # TYPE: seresnet
+    DEPTHS: [4, 4, 8, 8]
+
+  DECODER:
+    TYPE: deformable_transformer
+    NAME: deformable_transformer
+    HIDDEN_DIM: 512
+    NHEADS: 8
+    ENC_LAYERS: 6
+    DEC_LAYERS: 6
+    DIM_FEEDFORWARD: 2048
+    DROPOUT: 0.15
+    ACTIVATION: relu
+    NUM_FEATURE_LEVELS: 4 #4
+    DEC_N_POINTS: 4
+    ENC_N_POINTS: 4
+    NUM_QUERIES: 51
+    # Deformable Detr Param
+    AUX_LOSS: True # True
+    # Relation parameter
+    FREQ_BIAS: False # True
+    FREQ_DR: 0.2
+    LOGSOFTMAX_FREQ: False
+    ADD_EMB_REL: False # True                 #add additional embedding in relation
+    DROPOUT_REL: False # True
+    NORM_REL_EMB: True
+
+TRAIN:
+  EPOCHS: 100
+  LR: 1e-4
+  LR_BACKBONE: 1e-4 # 3e-5
+  WEIGHT_DECAY: 0 # 1e-4
+  LR_DROP: 100
+  CLIP_MAX_NORM: 0.1  # hardcoded
+  START_EPOCH: 0
+  FOCAL_LOSS_ALPHA: 0.25 # use FOCAL LOSS, set NONE if you dnt want to use else 0.25
+
+  # Optimizer
+  OPTIMIZER.NAME: 'adamw'
+  OPTIMIZER.EPS: 1e-8               # Optimizer Epsilon
+  OPTIMIZER.BETAS: (0.9, 0.999)     # Optimizer Betas
+  OPTIMIZER.MOMENTUM: 0.9           # SGD momentum
+  EDGE_W_WARMUP: True
+  SAVE_PATH: "./trained_weights/asm=0"          # save path for the checkpoint, log and val results
+  VAL_INTERVAL: 1                  # validation interval
+  SAVE_VAL: True                    # save validation data
+
+  # loss weight
+  LOSSES: ['labels', 'tokens', 'edges']
+  W_LABEL: 1.0
+  W_TOKEN: 1.0
+  W_EDGE: 3.0 # 3.0 when using aux loss
+
+
+log:
+  exp_name: "RadGraph Experiment"
+  message: "Running Prior-RadGraphFormer for RadGraph"
