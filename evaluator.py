@@ -128,7 +128,8 @@ class RelationformerEvaluator(SupervisedEvaluator):
 
         asm = self.network.asm
         project = self.network.project
-        out = graph_infer(h, out, asm=asm, project=project, freq=self.freq_baseline, emb=self.add_emd_rel)
+        relation_embed = self.network.relation_embed
+        out = graph_infer(h, out, relation_embed=relation_embed, asm=asm, project=project, freq=self.freq_baseline, emb=self.add_emd_rel)
 
         pred_edges = [{'pred_rels': pred_rels, 'pred_edge': pred_edge, 'pred_rel_score': pred_rel_score} for
                       pred_rels, pred_edge, pred_rel_score in

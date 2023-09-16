@@ -47,20 +47,28 @@ class RelationFormer(nn.Module):
             else self.hidden_dim * num_of_token  # +2*self.num_classes # need to check
         feed_fwd = config.MODEL.DECODER.DIM_FEEDFORWARD if hasattr(config.MODEL.DECODER,
                                                                    'NORM_REL_EMB') and config.MODEL.DECODER.NORM_REL_EMB else self.hidden_dim
-        self.asm = Assimilation(in_edge_dim=self.hidden_dim,
-                                hidden_edge_dim=self.hidden_dim,
-                                out_edge_dim=self.hidden_dim,
-                                in_node_dim=self.hidden_dim,
-                                hidden_node_dim=self.hidden_dim,
-                                num_heads=5,
-                                n_edge_class=config.MODEL.NUM_REL_CLS + 1,
-                                n_node_class=self.num_token_classes,
-                                asm_num=2,
-                                freeze_base=False,
-                                yesFuse=True, hard_att=False, sigmoid_uncertainty=False).cuda()  # some are hard-coded
-        self.project = MLP(input_dim, feed_fwd, self.hidden_dim, 3,
-                           use_norm=hasattr(config.MODEL.DECODER, 'NORM_REL_EMB') and config.MODEL.DECODER.NORM_REL_EMB,
-                           dropout=config.MODEL.DECODER.DROPOUT)
+        if config.MODEL.ASM:
+            self.asm = Assimilation(in_edge_dim=self.hidden_dim,
+                                    hidden_edge_dim=self.hidden_dim,
+                                    out_edge_dim=self.hidden_dim,
+                                    in_node_dim=self.hidden_dim,
+                                    hidden_node_dim=self.hidden_dim,
+                                    num_heads=5,
+                                    n_edge_class=config.MODEL.NUM_REL_CLS + 1,
+                                    n_node_class=self.num_token_classes,
+                                    asm_num=config.MODEL.NUM_ASM,
+                                    freeze_base=False,
+                                    yesFuse=True, hard_att=False,
+                                    sigmoid_uncertainty=False).cuda()  # some are hard-coded
+            self.project = MLP(input_dim, feed_fwd, self.hidden_dim, 3,
+                               use_norm=hasattr(config.MODEL.DECODER,
+                                                'NORM_REL_EMB') and config.MODEL.DECODER.NORM_REL_EMB,
+                               dropout=config.MODEL.DECODER.DROPOUT)
+        else:
+            self.relation_embed = MLP(input_dim, feed_fwd, config.MODEL.NUM_REL_CLS + 1, 3,
+                                      use_norm=hasattr(config.MODEL.DECODER,
+                                                       'NORM_REL_EMB') and config.MODEL.DECODER.NORM_REL_EMB,
+                                      dropout=config.MODEL.DECODER.DROPOUT)
 
         self.query_embed = nn.Embedding(self.num_queries, self.hidden_dim * 2)
         if self.num_feature_levels > 1:

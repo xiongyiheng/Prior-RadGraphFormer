@@ -84,13 +84,6 @@ class Assimilation(nn.Module):
 
         edge_class = []
         node_class = []
-
-        # To compute PKG results we used the following (commented out) snippet. This is not tested with current version.
-        # init_node_emb[int(init_node_emb.shape[0]/2):] =
-        # torch.zeros_like(init_node_emb[int(init_node_emb.shape[0]/2):], device=init_node_emb.device)
-        # init_edge_emb[int(init_edge_emb.shape[0]/2):] =
-        # torch.zeros_like(init_edge_emb[int(init_edge_emb.shape[0]/2):], device=init_edge_emb.device)
-
         # Note: This is to make it more memory efficient for higher asms.
         #       Also it has to refresh at each assimilation.
         visual_node_emb = init_node_emb.clone()
@@ -153,4 +146,4 @@ class Assimilation(nn.Module):
 
                 edge_class.append(alpha_edge)
                 node_class.append(alpha_node)
-        return edge_class, delta_edge, node_class, delta_node  # blocked_edges_ind, blocked_nodes_ind
+        return edge_class, delta_edge, node_class, delta_node

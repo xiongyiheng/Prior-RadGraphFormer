@@ -16,14 +16,15 @@ from losses import SetCriterion
 import ignite.distributed as igdist
 
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
-# /home/guests/mlmi_kamilia/Radgraphformer_prior/trained_weights/asm=0/runs/RadGraph Experiment_10/models/checkpoint_epoch=3.pt
+
+
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument('--config',
                         default='./configs/radgraph.yaml',
                         help='config file (.yml) containing the hyper-parameters for training. '
                              'If None, use the nnU-Net config. See /config for examples.')
-    parser.add_argument('--resume', default='/home/guests/mlmi_kamilia/Radgraphformer_prior/trained_weights/asm=0/runs/RadGraph Experiment_10/models/checkpoint_epoch=4.pt', type=str, help='checkpoint of the last epoch of the model')
+    parser.add_argument('--resume', default='', type=str, help='checkpoint of the last epoch of the model')
     parser.add_argument('--device', default='cuda', help='device to use for training')
     parser.add_argument("--local_rank", default=0, type=int)
     parser.add_argument("--nproc_per_node", default=None, type=int)
@@ -79,7 +80,7 @@ def main(args):
     torch.backends.cudnn.enabled = True
     torch.multiprocessing.set_sharing_strategy('file_system')
 
-    train_ds = Radgraph(is_train=True, is_augment=False)
+    train_ds = Radgraph(is_train=True, is_augment=True)
     val_ds = Radgraph(is_train=False, is_augment=False)
 
     if igdist.get_local_rank() == 0:
@@ -102,15 +103,10 @@ def main(args):
     # BUILD MODEL
     model = build_model(config)
     print('Number of parameters : ', count_parameters(model))
-    # if config.MODEL.DECODER.FREQ_BIAS: # use freq bias
-    #     logsoftmax = True if hasattr(config.MODEL.DECODER,'LOGSOFTMAX_FREQ') and config.MODEL.DECODER.LOGSOFTMAX_FREQ else False
-    #     freq_baseline = FrequencyBias(config.DATA.FREQ_BIAS, train_ds, dropout=config.MODEL.DECODER.FREQ_DR, logsoftmax=logsoftmax)
 
     net_wo_dist = model.to(device)
-    # freq_baseline = freq_baseline.to(device) if config.MODEL.DECODER.FREQ_BIAS else None
 
     model = igdist.auto_model(model)
-    # freq_baseline = igdist.auto_model(freq_baseline) if config.MODEL.DECODER.FREQ_BIAS and logsoftmax else None
     freq_baseline = None
 
     matcher = build_matcher(config=config)

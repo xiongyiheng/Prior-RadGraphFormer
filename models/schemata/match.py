@@ -54,15 +54,6 @@ class Match(nn.Module):
     def send_message_kg2sg(feat: torch.Tensor, schema: torch.Tensor, is_training: bool,
                            gt_dist, gt_schema=False, destroy_index=None):
         raw_att = feat @ schema
-        # if gt_schema:  # IC
-        #     if is_training:
-        #         # Teacher Forcing; During training we pass the GT labels
-        #         att = (torch.clone(gt_dist))
-        #     else:
-        #         att = F.softmax(raw_att, dim=1)
-        #     mask_s = torch.zeros(att.shape[0], device=att.device)
-        #     att = att * mask_s[:, None]
-        # else:  # ICP
         if is_training:
             # Teacher Forcing; During training we pass the GT labels
             att = (torch.clone(gt_dist))

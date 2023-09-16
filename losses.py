@@ -128,7 +128,7 @@ class SetCriterion(nn.Module):
     def loss_label(self, outputs, targets, indices, num_targets=None):
         """Compute the losses related to label classfication
         """
-        weight = torch.ones(self.num_label_classes).to(outputs.get_device()) 
+        weight = torch.ones(self.num_label_classes).to(outputs.get_device())
 
         idx = self._get_src_permutation_idx(indices)
 
@@ -169,7 +169,7 @@ class SetCriterion(nn.Module):
         freq_label_dist = []
         total_edge = 0
         total_fg = 0  # foreground
-
+        relation_feature = []
         node_dists = {}
         rel_dists = {}
 
@@ -217,60 +217,48 @@ class SetCriterion(nn.Module):
             # get the valid predicted matching
             pred_ids = indices[b_id][0]
             joint_emb = object_token[b_id, pred_ids, :]
+            if self.asm:
+                node_emb = joint_emb
+                edge_emb = self.project(torch.cat((joint_emb[all_edges_[:, 0], :], joint_emb[all_edges_[:, 1], :],
+                                                   relation_token[b_id, ...].repeat(all_edges_.shape[0], 1)), 1))
+                head_ind = all_edges_[:, 0]
+                tail_ind = all_edges_[:, 1]
+                edge_class, _, node_class, _ = self.asm(init_node_emb=node_emb,
+                                                        init_edge_emb=edge_emb,
+                                                        head_ind=head_ind,
+                                                        tail_ind=tail_ind,
+                                                        is_training=True,
+                                                        gt_node_dists=gt_node_dists,
+                                                        gt_edge_dists=gt_edge_dists,
+                                                        destroy_visual_input=False,
+                                                        keep_inds=None
+                                                        )
+                for i in range(len(edge_class)):
+                    if b_id == 0:  # only the first batch do initialization
+                        node_dists['node_asm%d' % i] = []
+                        rel_dists['rel_asm%d' % i] = []
+                    node_dists['node_asm%d' % i].append(node_class[i])
+                    rel_dists['rel_asm%d' % i].append(edge_class[i])
+            else:
+                relation_feature.append(torch.cat((joint_emb[all_edges_[:, 0], :], joint_emb[all_edges_[:, 1], :],
+                                                   relation_token[b_id, ...].repeat(all_edges_.shape[0], 1)), 1))
+        if self.asm:
+            all_edge_lbl = torch.cat(all_edge_lbl, 0).to(object_token.get_device())  # transfer it into a tensor
+            all_node_lbl = torch.cat(all_node_lbl, 0).to(object_token.get_device())
+            losses = {}
+            for i in range(len(node_dists)):
+                node_pred = torch.cat(node_dists['node_asm%d' % i], 0)
+                losses['node_loss%d' % i] = F.cross_entropy(node_pred, all_node_lbl, reduction='mean', ignore_index=0)
+                relation_pred = torch.cat(rel_dists['rel_asm%d' % i], 0)
+                losses['edge_loss%d' % i] = F.cross_entropy(relation_pred, all_edge_lbl, reduction='mean')
+            loss = sum(losses.values())
+        else:
+            relation_feature = torch.cat(relation_feature, 0)  # transfer it into a tensor
 
-            node_emb = joint_emb
-            edge_emb = self.project(torch.cat((joint_emb[all_edges_[:, 0], :], joint_emb[all_edges_[:, 1], :],
-                                               relation_token[b_id, ...].repeat(all_edges_.shape[0], 1)), 1))
+            all_edge_lbl = torch.cat(all_edge_lbl, 0).to(object_token.get_device())  # transfer it into a tensor
+            relation_pred = self.relation_embed(relation_feature)
 
-            head_ind = all_edges_[:, 0]
-
-            tail_ind = all_edges_[:, 1]
-
-            edge_class, _, node_class, _ = self.asm(init_node_emb=node_emb,
-                                                    init_edge_emb=edge_emb,
-                                                    head_ind=head_ind,
-                                                    tail_ind=tail_ind,
-                                                    is_training=True,
-                                                    gt_node_dists=gt_node_dists,
-                                                    gt_edge_dists=gt_edge_dists,
-                                                    destroy_visual_input=False,
-                                                    keep_inds=None
-                                                    )
-            for i in range(len(edge_class)):
-                if b_id == 0:  # only the first batch do initialization
-                    node_dists['node_asm%d' % i] = []
-                    rel_dists['rel_asm%d' % i] = []
-                node_dists['node_asm%d' % i].append(node_class[i])
-                rel_dists['rel_asm%d' % i].append(edge_class[i])
-
-            if self.freq:
-                if self.use_target:
-                    target_token_class = t_token_lbl[indices[b_id][1]]
-                    freq_token_dist.append(self.freq_baseline.index_with_labels(
-                        torch.stack((target_token_class[all_edges_[:, 0]], target_token_class[all_edges_[:, 1]]), 1)))
-                    target_label_class = t_label_lbl[indices[b_id][1]]
-                    freq_label_dist.append(self.freq_baseline.index_with_labels(
-                        torch.stack((target_label_class[all_edges_[:, 0]], target_label_class[all_edges_[:, 1]]), 1)))
-                else:
-                    pred_token_class = p_token_lbl[pred_ids]
-                    freq_token_dist.append(self.freq_baseline.index_with_labels(
-                        torch.stack((pred_token_class[all_edges_[:, 0]], pred_token_class[all_edges_[:, 1]]), 1)))
-                    pred_label_class = p_label_lbl[pred_ids]
-                    freq_label_dist.append(self.freq_baseline.index_with_labels(
-                        torch.stack((pred_label_class[all_edges_[:, 0]], pred_label_class[all_edges_[:, 1]]), 1)))
-
-        all_edge_lbl = torch.cat(all_edge_lbl, 0).to(object_token.get_device())  # transfer it into a tensor
-        all_node_lbl = torch.cat(all_node_lbl, 0).to(object_token.get_device())
-        if len(freq_token_dist) > 0:  # add frequency distribution wd predicted one
-            batch_freq_dist = torch.cat(freq_token_dist, 0)
-            # relation_pred += batch_freq_dist
-        losses = {}
-        for i in range(len(node_dists)):
-            node_pred = torch.cat(node_dists['node_asm%d' % i], 0)
-            losses['node_loss%d' % i] = F.cross_entropy(node_pred, all_node_lbl, reduction='mean', ignore_index=0)
-            relation_pred = torch.cat(rel_dists['rel_asm%d' % i], 0)
-            losses['edge_loss%d' % i] = F.cross_entropy(relation_pred, all_edge_lbl, reduction='mean')
-        loss = sum(losses.values())
+            loss = F.cross_entropy(relation_pred, all_edge_lbl, reduction='mean')
         return loss
 
     def _get_src_permutation_idx(self, indices):
@@ -293,9 +281,6 @@ class SetCriterion(nn.Module):
                       The expected keys in each dict depends on the losses applied, see each loss' doc
         """
         outputs_without_aux = {k: v for k, v in outputs.items() if k != 'aux_outputs' and k != 'enc_outputs'}
-        # Retrieve the matching between the outputs of the last layer and the valid targets
-        # print("start filtering invalid stuff")
-        # print(datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
         valid_targets = []
         for t in targets:
             valid_target = {}
@@ -317,8 +302,6 @@ class SetCriterion(nn.Module):
                 valid_target["edges"] = torch.empty((0, 3), dtype=torch.long).to(next(iter(outputs.values())).device)
             valid_targets.append(valid_target)
 
-        # print("finish filtering invalid stuff")
-        # print(datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
         indices = self.matcher(outputs_without_aux, valid_targets)
 
         # Compute the average number of target tokens across all nodes, for normalization purposes

@@ -1,10 +1,12 @@
 import os
 from monai.engines import SupervisedTrainer
 from monai.inferers import SimpleInferer
-from monai.handlers import LrScheduleHandler, ValidationHandler, StatsHandler, TensorBoardStatsHandler, CheckpointSaver, MeanDice
+from monai.handlers import LrScheduleHandler, ValidationHandler, StatsHandler, TensorBoardStatsHandler, CheckpointSaver, \
+    MeanDice
 import torch
 import gc
 from utils import get_total_grad_norm
+
 
 # define customized trainer
 class RelationformerTrainer(SupervisedTrainer):
@@ -13,19 +15,18 @@ class RelationformerTrainer(SupervisedTrainer):
         self.distributed = kwargs.pop('distributed')
         # Initialize superclass things
         super().__init__(**kwargs)
-        self.tl = ['tokens','labels','edges' ]
+        self.tl = ['tokens', 'labels', 'edges']
         self.writer = writer
 
     def _iteration(self, engine, batchdata):
-        images = [image.to(engine.state.device,  non_blocking=False) for image in batchdata['imgs_ls']]
+        images = [image.to(engine.state.device, non_blocking=False) for image in batchdata['imgs_ls']]
         target = []
-        for i in range(len(images)): # iterate batch
-            current_target = {}
-            current_target['tokens'] = batchdata['tokens'][i].to(engine.state.device, non_blocking=True)
-            current_target['labels'] = batchdata['labels'][i].to(engine.state.device, non_blocking=True)
-            current_target['edges'] = batchdata['edges'][i].to(engine.state.device, non_blocking=True)
+        for i in range(len(images)):  # iterate batch
+            current_target = {'tokens': batchdata['tokens'][i].to(engine.state.device, non_blocking=True),
+                              'labels': batchdata['labels'][i].to(engine.state.device, non_blocking=True),
+                              'edges': batchdata['edges'][i].to(engine.state.device, non_blocking=True)}
             target.append(current_target)
-            
+
         self.network.train()
         self.optimizer.zero_grad()
         h, out = self.network(images)
@@ -42,15 +43,14 @@ class RelationformerTrainer(SupervisedTrainer):
         #     norm_type=2,
         # )
         losses['total'].backward()
-        
-        if 0.1 > 0: #todo replace
+
+        if 0.1 > 0:  # todo replace
             _ = torch.nn.utils.clip_grad_norm_(self.network.parameters(), 0.1)
         else:
             _ = get_total_grad_norm(self.networm.parameters(), 0.1)
 
-
         self.optimizer.step()
-        
+
         gc.collect()
         torch.cuda.empty_cache()
         return {"images": images, "loss": losses}
@@ -83,36 +83,13 @@ def build_trainer(train_loader, net, loss, optimizer, scheduler, writer,
             interval=config.TRAIN.VAL_INTERVAL,
             epoch_level=True
         )
-        # TensorBoardStatsHandler(
-        #     writer,
-        #     tag_name="token_classification_loss",
-        #     output_transform=lambda x: x["loss"]["tokens"],
-        #     global_epoch_transform=lambda x: scheduler.last_epoch
-        # ),
-        # TensorBoardStatsHandler(
-        #     writer,
-        #     tag_name="label_classification_loss",
-        #     output_transform=lambda x: x["loss"]["labels"],
-        #     global_epoch_transform=lambda x: scheduler.last_epoch
-        # ),
-        # TensorBoardStatsHandler(
-        #     writer,
-        #     tag_name="edge_loss",
-        #     output_transform=lambda x: x["loss"]["edges"],
-        #     global_epoch_transform=lambda x: scheduler.last_epoch
-        # ),
-        # TensorBoardStatsHandler(
-        #     writer,
-        #     tag_name="total_loss",
-        #     output_transform=lambda x: x["loss"]["total"],
-        #     global_epoch_transform=lambda x: scheduler.last_epoch
-        # )
     ]
-    if local_rank==0:
+    if local_rank == 0:
         train_handlers.extend(
             [
                 CheckpointSaver(
-                    save_dir=os.path.join(config.TRAIN.SAVE_PATH, "runs", '%s_%d' % (config.log.exp_name, config.DATA.SEED), 'models'),
+                    save_dir=os.path.join(config.TRAIN.SAVE_PATH, "runs",
+                                          '%s_%d' % (config.log.exp_name, config.DATA.SEED), 'models'),
                     save_dict={"net": net, "optimizer": optimizer, "scheduler": scheduler},
                     save_interval=1,
                     n_saved=1

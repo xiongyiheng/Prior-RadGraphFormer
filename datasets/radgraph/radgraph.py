@@ -14,7 +14,7 @@ MAX_EDGES = 117
 class Radgraph(Dataset):
     def __init__(self, is_train, is_augment,
                  data_path="/home/data/DIVA/mimic/mimic-cxr-jpg-resized/",
-                 label_path="/home/guests/mlmi_kamilia/Radgraphformer_emb/datasets/radgraph/"):
+                 label_path="./datasets/radgraph/"):
         # is_train: training set or val set
         # is_augment: augment or not
         super(Radgraph, self).__init__()
@@ -51,7 +51,7 @@ class Radgraph(Dataset):
         else:
             raise Exception("Sorry, no img found at specified file")
 
-        report_ls = self.data[report_id]  # list(N,3)
+        report_ls = self.data[report_id]  # list(N, 3)
         labels_ls = []
         tokens_ls = []
         edges_ls = []  # report_ls['edges']
@@ -86,4 +86,4 @@ class Radgraph(Dataset):
 if __name__ == "__main__":
     Data = Radgraph(is_train=True, is_augment=False,
                     data_path="/home/guests/data/DIVA/mimic/mimic-cxr-jpg/2.0.0/files/",
-                    label_path="/home/yiheng/Desktop/RadGraph Relationformer/datasets/radgraph/")
+                    label_path="./datasets/radgraph/")
