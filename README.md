@@ -20,7 +20,8 @@ python setup.py install
 
 # How to train the Prior-RadGraphFormer
 
-## Preparing the data (coming soon)
+## Preparing the data
+See details [here](preprocess/readme.md).
 
 ## Preparing the config file
 The config file can be found at `.configs/radgraph.yaml`. Make custom changes if necessary.
