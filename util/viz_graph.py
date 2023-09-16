@@ -84,7 +84,7 @@ def map_cls_name(ls,mode,token_ls=None):
     ls_name = []
 
     if mode == "tokens":
-        with open('/home/guests/mlmi_kamilia/RadGraph Relationformer_matcher1/datasets/radgraph/OBS_ANAT_temp.json', 'r') as f:
+        with open('/home/guests/mlmi_kamilia/RadGraph Relationformer_matcher1/datasets/radgraph/OBS_ANAT_list.json', 'r') as f:
             map_dict = json.load(f)
             map_ls = map_dict["total"]
         for i in range(len(ls)):
