@@ -8,11 +8,14 @@ Code release for the GRAIL @ MICCAI 2023 paper "Prior-RadGraphFormer: A Prior-Kn
 Prior-RadGraphformer is a transformer-based network aiming at directly generating radiology graphs from radiology X-rays. Generated graphs can be used for multiple downstream tasks such as free-text reports generation and pathologies classification.
 
 # Installation
-We recommend using python3.8 and following scripts to install required python packages
+We recommend using python3.8 and following scripts to install required python packages and compile CUDA operators
 ```
 python -m venv /path/to/new/virtual/environment
 source /path/to/new/virtual/environment/bin/activate
 pip install -r requirements.txt
+
+cd ./models/ops
+python setup.py install
 ```
 
 # How to train the Prior-RadGraphFormer
