@@ -24,7 +24,7 @@ python setup.py install
 See details [here](preprocess/readme.md).
 
 ## Preparing the config file
-The config file can be found at `.configs/radgraph.yaml`. Make custom changes if necessary.
+The config file can be found at `.configs/radgraph.yaml`. Make custom changes if necessary. Specifically, to train a vanilla RadGraphFormer, make MODEL.ASM=False.
 
 ## Training
 ```
