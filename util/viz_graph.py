@@ -108,7 +108,7 @@ def map_cls_name(ls,mode,token_ls=None):
 
     return ls_name
 
-def draw_graph(dict,mode,num):
+def draw_graph(dict,mode,num=0):
     """
     draw graph using Igraph
     :param dict: a dictionary contains ["tokens","labels","edges"]. It could be either GT or Pre
@@ -158,17 +158,17 @@ def draw_graph(dict,mode,num):
     # )
     #plt.show()
 def main():
-    # with open('D:/studium/MIML/radgraph/GraphGen/baseline/pred_dict_from_radgraph.json', 'r') as f:
-    #     sample_dict = json.load(f)
-    # draw_graph(sample_dict["/home/guests/mlmi_kamilia/RATCHET/out_folder/p18_p18026902_s55739083.txt"],gt)
-    token_ls = [101, 39, 151, 107, 222, 186, 73, 87, 18, 68]
-    edge_ls = [[0, 1, 1], [2, 1, 1], [3, 4, 1], [5, 6, 1], [7, 8, 0], [9, 8, 1], [2, 1, 1]]
+    with open('D:/studium/MIML/radgraph/GraphGen/baseline/pred_dict_from_radgraph.json', 'r') as f:
+        sample_dict = json.load(f)
+    draw_graph(sample_dict["/home/guests/mlmi_kamilia/RATCHET/out_folder/p18_p18026902_s55739083.txt"],gt)
+    # token_ls = [101, 39, 151, 107, 222, 186, 73, 87, 18, 68]
+    # edge_ls = [[0, 1, 1], [2, 1, 1], [3, 4, 1], [5, 6, 1], [7, 8, 0], [9, 8, 1], [2, 1, 1]]
 
-    token_ls = map_cls_name(token_ls,"tokens",None)
-    edge_ls = map_cls_name(edge_ls, "edges", token_ls)
-
-    print(token_ls)
-    print(edge_ls)
+    # token_ls = map_cls_name(token_ls,"tokens",None)
+    # edge_ls = map_cls_name(edge_ls, "edges", token_ls)
+    #
+    # print(token_ls)
+    # print(edge_ls)
     #port igraph as ig
     #
     # g = ig.Graph(directed=True, n=4)

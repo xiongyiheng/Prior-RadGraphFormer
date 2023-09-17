@@ -30,6 +30,11 @@ The config file can be found at `.configs/radgraph.yaml`. Make custom changes if
 ```
 python train.py
 ```
+## Visualization
+Run <code>python util/viz_graph.py</code>, you may need to edit the dir though.
+
+## Post-Process
+See details [here](postprocess/readme.md).
 
 
 # <a name="citation"></a> Citation

@@ -11,3 +11,7 @@ It is not enough to have just the RadGraph-format json files, you need following
 [OBS_ANAT_list.json](OBS_ANAT_list.json) lists all selected observations and anatomies.
 [gen_dataset.py](gen_dataset.py) generates the dataset used in our model, while the input is the radgraph-format json file.
 It converts all entities names into non-sensitive numbers to input the model.
+
+# Pre-save the X-ray images locally
+To save the loading resources, we pre-transform the images and save them as tensors locally. You could find more details in the 
+[script file](preprocess_img.py)
