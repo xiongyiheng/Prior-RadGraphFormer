@@ -33,7 +33,7 @@ python train.py
 ## Visualization
 Run <code>python util/viz_graph.py</code>, you may need to edit the dir though.
 
-## Post-Process
+## Downstream tasks evaluation
 See details [here](postprocess/readme.md).
 
 
