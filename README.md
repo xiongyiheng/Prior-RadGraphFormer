@@ -36,6 +36,8 @@ Run <code>python util/viz_graph.py</code>, you may need to edit the dir though.
 ## Downstream tasks evaluation
 See details [here](postprocess/readme.md).
 
+## Pretrained checkpoints
+[checkpoint](https://drive.google.com/file/d/1irgJ6uc0v5QnPzo1t3eq0MwMHSQH_vIA/view?usp=sharing)
 
 # <a name="citation"></a> Citation
 
