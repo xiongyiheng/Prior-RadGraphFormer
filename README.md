@@ -51,6 +51,15 @@ If you find this code helpful, please consider citing:
       archivePrefix={arXiv},
       primaryClass={cs.CV}
 }
+
+@inproceedings{xiong2023prior,
+  title={Prior-RadGraphFormer: A Prior-Knowledge-Enhanced Transformer for Generating Radiology Graphs from X-Rays},
+  author={Xiong, Yiheng and Liu, Jingsong and Zaripova, Kamilia and Sharifzadeh, Sahand and Keicher, Matthias and Navab, Nassir},
+  booktitle={International Conference on Medical Image Computing and Computer-Assisted Intervention},
+  pages={54--63},
+  year={2023},
+  organization={Springer}
+}
 ```
 
 # Acknowledgement
