@@ -4,6 +4,7 @@
 [[`Paper`](https://link.springer.com/chapter/10.1007/978-3-031-55088-1_5)]
 
 [Yiheng Xiong*](https://xiongyiheng.github.io/), [Jingsong Liu*](https://tumvink.github.io/), [Kamilia Zaripova*](https://scholar.google.com/citations?user=ZQ1CQkQAAAAJ&hl=en), [Sahand Sharifzadeh](https://scholar.google.de/citations?user=frzfxXYAAAAJ&hl=en), [Matthias Keicher†](https://www.cs.cit.tum.de/camp/members/matthias-keicher/) and [Nassir Navab†](https://www.cs.cit.tum.de/camp/members/cv-nassir-navab/nassir-navab/)
+
 (* denotes equal contribution and † denotes shared last authorship)
 
 Official implementation for the GRAIL @ MICCAI 2023 paper "Prior-RadGraphFormer: A Prior-Knowledge-Enhanced Transformer for Generating Radiology Graphs from X-Rays".
