@@ -48,15 +48,6 @@ See details [here](postprocess/readme.md).
 
 If you find this code helpful, please consider citing:
 ```BibTeX
-@misc{xiong2023priorradgraphformer,
-      title={Prior-RadGraphFormer: A Prior-Knowledge-Enhanced Transformer for Generating Radiology Graphs from X-Rays}, 
-      author={Yiheng Xiong and Jingsong Liu and Kamilia Zaripova and Sahand Sharifzadeh and Matthias Keicher and Nassir Navab},
-      year={2023},
-      eprint={2303.13818},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
-}
-
 @inproceedings{xiong2023prior,
   title={Prior-RadGraphFormer: A Prior-Knowledge-Enhanced Transformer for Generating Radiology Graphs from X-Rays},
   author={Xiong, Yiheng and Liu, Jingsong and Zaripova, Kamilia and Sharifzadeh, Sahand and Keicher, Matthias and Navab, Nassir},
