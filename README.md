@@ -42,7 +42,7 @@ Run <code>python util/viz_graph.py</code>, you may need to edit the dir though.
 See details [here](postprocess/readme.md).
 
 ## Pretrained checkpoints
-[checkpoint](https://syncandshare.lrz.de/getlink/fiCb8gGR6oGKu7kysr4S6b/prior_radgraphformer_ckpt.pt)
+[checkpoint]([https://syncandshare.lrz.de/getlink/fiCb8gGR6oGKu7kysr4S6b/prior_radgraphformer_ckpt.pt](https://drive.google.com/file/d/12Cg4F9kW1ZZxeErHkYZGMkx_1V81bjrf/view?usp=sharing))
 
 # <a name="citation"></a> Citation
 
