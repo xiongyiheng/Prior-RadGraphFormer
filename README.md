@@ -46,7 +46,7 @@ See details [here](postprocess/readme.md).
 
 # <a name="citation"></a> Citation
 
-If you find this code helpful, please consider citing:
+If you find this code helpful, please consider citing and give our code repository a star ⭐️:
 ```BibTeX
 @inproceedings{xiong2023prior,
   title={Prior-RadGraphFormer: A Prior-Knowledge-Enhanced Transformer for Generating Radiology Graphs from X-Rays},
