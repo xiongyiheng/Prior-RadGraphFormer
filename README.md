@@ -7,7 +7,7 @@ Yiheng Xiong*, [Jingsong Liu*](https://tumvink.github.io/), [Kamilia Zaripova*](
 
 (* denotes equal contribution and † denotes shared last authorship)
 
-Official implementation for the GRAIL @ MICCAI 2023 paper "Prior-RadGraphFormer: A Prior-Knowledge-Enhanced Transformer for Generating Radiology Graphs from X-Rays".
+Official implementation for MICCAI Workshop on GRaphs in biomedicAl Image anaLysis (GRAIL) 2023 paper "Prior-RadGraphFormer: A Prior-Knowledge-Enhanced Transformer for Generating Radiology Graphs from X-Rays".
 
 ![1-teaser-v3-out-1](docs/architecture.png)
 Prior-RadGraphformer is a transformer-based network aiming at directly generating radiology graphs from radiology X-rays. Generated graphs can be used for multiple downstream tasks such as free-text reports generation and pathologies classification.
