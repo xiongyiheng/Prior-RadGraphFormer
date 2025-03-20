@@ -42,7 +42,7 @@ Run <code>python util/viz_graph.py</code>, you may need to edit the dir though.
 See details [here](postprocess/readme.md).
 
 ## Pretrained checkpoints
-[checkpoint]([https://cloudstore.uni-ulm.de/s/pggikBSAfkK8oLt])
+[checkpoint](https://cloudstore.uni-ulm.de/s/pggikBSAfkK8oLt)
 
 # <a name="citation"></a> Citation
 
